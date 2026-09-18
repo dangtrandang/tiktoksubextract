@@ -4,15 +4,27 @@ Tất cả những thay đổi nổi bật của dự án **TikTok SubExtract** 
 
 ---
 
+## [1.2.0] - 2026-09-18
+
+### 🚀 Tính năng mới (Added)
+- **Đồng bộ & Lựa chọn Mô hình Linh hoạt (Dynamic Model Sync & Selection):**
+  - Thêm nút **`[ 🔄 Tải model mới ]`** kết nối trực tiếp endpoint `/v1/models` của Groq để tự động cập nhật danh sách model mới nhất vào máy mà không sợ bị lỗi out-of-date model.
+  - Phân loại và cung cấp 2 bộ chọn trực quan độc lập (Dialog Single-Choice chuẩn iOS/Material3):
+    - **Mô hình Bóc băng (Whisper):** Cho phép chọn `whisper-large-v3`, `whisper-large-v3-turbo`...
+    - **Mô hình AI Sửa lỗi (LLM):** Cho phép chọn linh hoạt giữa các mô hình Groq đang hỗ trợ (`groq/compound-mini`, `groq/compound`, `openai/gpt-oss-120b`, `qwen/qwen3.8-27b`...).
+  - Cache offline danh sách mô hình vào `SharedPreferences` để sử dụng ngay cả khi offline hoặc khởi động lại app.
+
+---
+
 ## [1.1.0] - 2026-09-18
 
 ### 🚀 Tính năng mới (Added)
-- **Tùy chọn AI Sửa Lỗi Chính Tả (`Groq Llama 3.3 70B`):**
+- **Tùy chọn AI Sửa Lỗi Chính Tả (`Groq LLM Engine`):**
   - Thêm nút bấm chủ động **`[ ✨ AI Sửa Lỗi ]`** trên tab Văn bản.
   - Tự động phát hiện từ đồng âm/gần âm phát âm sai, chuẩn hóa thuật ngữ tiếng Anh/công nghệ/tên riêng (AI, ChatGPT, TikTok, Marketing, Gen Z...).
   - Thêm dấu câu ngắt đoạn tự nhiên, giữ nguyên 100% nội dung gốc.
   - Cho phép người dùng chuyển đổi qua lại tức thì giữa bản gốc Whisper và bản AI đã trau chuốt (`[ ↩️ Xem bản gốc ]` ➔ `[ ✨ Xem bản AI sửa ]`).
-  - Sử dụng chung Groq API Key hiện có, hoàn toàn miễn phí, tốc độ phản hồi ~0.3 giây.
+  - Tốc độ phản hồi siêu tốc (~0.3 giây) và hoàn toàn miễn phí qua Groq Cloud.
 
 ---
 

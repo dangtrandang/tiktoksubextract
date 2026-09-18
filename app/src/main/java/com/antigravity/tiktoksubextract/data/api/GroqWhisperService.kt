@@ -106,6 +106,49 @@ class GroqWhisperService(
         }
     }
 
+    /**
+     * Fetches and categorizes available models from Groq into (WhisperModels, LlmModels).
+     */
+    suspend fun fetchAvailableModels(apiKey: String): Result<Pair<List<String>, List<String>>> = withContext(Dispatchers.IO) {
+        try {
+            val request = Request.Builder()
+                .url("https://api.groq.com/openai/v1/models")
+                .header("Authorization", "Bearer $apiKey")
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return@withContext Result.failure(IOException("Không thể tải danh sách model (HTTP ${response.code})"))
+                }
+
+                val bodyString = response.body?.string() ?: ""
+                val modelsResponse = gson.fromJson(bodyString, ModelsResponse::class.java)
+                val allIds = modelsResponse.data?.map { it.id } ?: emptyList()
+
+                val whisperModels = allIds.filter { it.contains("whisper", ignoreCase = true) }
+                    .sorted()
+
+                val llmModels = allIds.filter { id ->
+                    !id.contains("whisper", ignoreCase = true) &&
+                    !id.contains("guard", ignoreCase = true) &&
+                    !id.contains("orpheus", ignoreCase = true)
+                }.sorted()
+
+                Result.success(Pair(whisperModels, llmModels))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private data class ModelsResponse(
+        val data: List<ModelItem>? = null
+    )
+    private data class ModelItem(
+        val id: String
+    )
+
     companion object {
         private const val GROQ_TRANSCRIPTION_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
     }

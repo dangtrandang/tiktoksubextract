@@ -359,7 +359,7 @@ class TranscribeDialogActivity : AppCompatActivity() {
                 binding.btnAiPolish.text = "Đang sửa..."
 
                 lifecycleScope.launch {
-                    val result = llamaService.polishTranscript(prefs.groqApiKey, rawText)
+                    val result = llamaService.polishTranscript(prefs.groqApiKey, rawText, prefs.llmModel)
                     binding.btnAiPolish.isEnabled = true
 
                     if (result.isSuccess) {

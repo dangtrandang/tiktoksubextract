@@ -30,6 +30,18 @@ class AppPreferences(context: Context) {
         get() = prefs.getBoolean(KEY_QUICK_NOTIFICATION, false)
         set(value) = prefs.edit().putBoolean(KEY_QUICK_NOTIFICATION, value).apply()
 
+    var llmModel: String
+        get() = prefs.getString(KEY_LLM_MODEL, DEFAULT_LLM_MODEL) ?: DEFAULT_LLM_MODEL
+        set(value) = prefs.edit().putString(KEY_LLM_MODEL, value).apply()
+
+    var cachedWhisperModels: Set<String>
+        get() = prefs.getStringSet(KEY_CACHED_WHISPER_MODELS, DEFAULT_WHISPER_MODELS) ?: DEFAULT_WHISPER_MODELS
+        set(value) = prefs.edit().putStringSet(KEY_CACHED_WHISPER_MODELS, value).apply()
+
+    var cachedLlmModels: Set<String>
+        get() = prefs.getStringSet(KEY_CACHED_LLM_MODELS, DEFAULT_LLM_MODELS) ?: DEFAULT_LLM_MODELS
+        set(value) = prefs.edit().putStringSet(KEY_CACHED_LLM_MODELS, value).apply()
+
     val isApiKeyConfigured: Boolean
         get() = groqApiKey.isNotBlank()
 
@@ -41,8 +53,21 @@ class AppPreferences(context: Context) {
         private const val KEY_AUTO_START = "auto_start_on_share"
         private const val KEY_OUTPUT_FORMAT = "default_output_format"
         private const val KEY_QUICK_NOTIFICATION = "quick_notification_enabled"
+        private const val KEY_LLM_MODEL = "llm_model"
+        private const val KEY_CACHED_WHISPER_MODELS = "cached_whisper_models"
+        private const val KEY_CACHED_LLM_MODELS = "cached_llm_models"
 
         const val DEFAULT_MODEL = "whisper-large-v3"
         const val TURBO_MODEL = "whisper-large-v3-turbo"
+        const val DEFAULT_LLM_MODEL = "groq/compound-mini"
+
+        val DEFAULT_WHISPER_MODELS = setOf("whisper-large-v3", "whisper-large-v3-turbo")
+        val DEFAULT_LLM_MODELS = setOf(
+            "groq/compound-mini",
+            "groq/compound",
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "qwen/qwen3.8-27b"
+        )
     }
 }

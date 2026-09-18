@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs: AppPreferences
     private val whisperService = GroqWhisperService()
 
-    private var selectedModel = AppPreferences.DEFAULT_MODEL
+    private var selectedWhisperModel = AppPreferences.DEFAULT_MODEL
+    private var selectedLlmModel = AppPreferences.DEFAULT_LLM_MODEL
     private var selectedLanguage = "auto"
 
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -63,23 +64,97 @@ class MainActivity : AppCompatActivity() {
             QuickNotificationService.start(this)
         }
 
-        selectedModel = prefs.whisperModel
-        updateModelUi(selectedModel)
+        selectedWhisperModel = prefs.whisperModel
+        binding.tvSelectedWhisperModel.text = selectedWhisperModel
+
+        selectedLlmModel = prefs.llmModel
+        binding.tvSelectedLlmModel.text = selectedLlmModel
 
         selectedLanguage = prefs.language
         updateLanguageUi(selectedLanguage)
     }
 
     private fun setupListeners() {
-        // Model Selection
-        binding.modelLargeV3.setOnClickListener {
-            selectedModel = AppPreferences.DEFAULT_MODEL
-            updateModelUi(selectedModel)
+        // Whisper Model Picker Dialog
+        binding.layoutSelectWhisperModel.setOnClickListener {
+            val cachedModels = prefs.cachedWhisperModels.toList().sorted().ifEmpty {
+                AppPreferences.DEFAULT_WHISPER_MODELS.toList().sorted()
+            }
+            showModelSelectionDialog(
+                title = "Chọn mô hình Whisper (Bóc băng)",
+                items = cachedModels,
+                currentSelection = selectedWhisperModel
+            ) { selected ->
+                selectedWhisperModel = selected
+                binding.tvSelectedWhisperModel.text = selected
+            }
         }
 
-        binding.modelTurbo.setOnClickListener {
-            selectedModel = AppPreferences.TURBO_MODEL
-            updateModelUi(selectedModel)
+        // LLM Model Picker Dialog
+        binding.layoutSelectLlmModel.setOnClickListener {
+            val cachedModels = prefs.cachedLlmModels.toList().sorted().ifEmpty {
+                AppPreferences.DEFAULT_LLM_MODELS.toList().sorted()
+            }
+            showModelSelectionDialog(
+                title = "Chọn mô hình AI (Sửa lỗi chính tả)",
+                items = cachedModels,
+                currentSelection = selectedLlmModel
+            ) { selected ->
+                selectedLlmModel = selected
+                binding.tvSelectedLlmModel.text = selected
+            }
+        }
+
+        // Reload Models from Groq API
+        binding.btnReloadModels.setOnClickListener {
+            val key = binding.etApiKey.text?.toString()?.trim() ?: ""
+            if (key.isBlank()) {
+                Toast.makeText(this, "Vui lòng nhập Groq API Key trước", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            binding.btnReloadModels.isEnabled = false
+            binding.btnReloadModels.text = "Đang tải..."
+
+            lifecycleScope.launch {
+                val result = whisperService.fetchAvailableModels(key)
+                binding.btnReloadModels.isEnabled = true
+                binding.btnReloadModels.text = "🔄 Tải model mới"
+
+                result.onSuccess { (whisperModels, llmModels) ->
+                    if (whisperModels.isNotEmpty()) {
+                        prefs.cachedWhisperModels = whisperModels.toSet()
+                        if (!whisperModels.contains(selectedWhisperModel)) {
+                            selectedWhisperModel = whisperModels.first()
+                            binding.tvSelectedWhisperModel.text = selectedWhisperModel
+                            prefs.whisperModel = selectedWhisperModel
+                        }
+                    }
+
+                    if (llmModels.isNotEmpty()) {
+                        prefs.cachedLlmModels = llmModels.toSet()
+                        if (!llmModels.contains(selectedLlmModel)) {
+                            // Ưu tiên chọn compound-mini nếu có, không thì model đầu tiên
+                            selectedLlmModel = llmModels.firstOrNull { it.contains("compound-mini") }
+                                ?: llmModels.first()
+                            binding.tvSelectedLlmModel.text = selectedLlmModel
+                            prefs.llmModel = selectedLlmModel
+                        }
+                    }
+
+                    Toast.makeText(
+                        this@MainActivity,
+                        "✓ Đã đồng bộ ${whisperModels.size} Whisper & ${llmModels.size} LLM models!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }.onFailure { ex ->
+                    Toast.makeText(
+                        this@MainActivity,
+                        "✕ Lỗi khi tải models: ${ex.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
 
         // Language Selection
@@ -150,7 +225,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnSaveSettings.setOnClickListener {
             val key = binding.etApiKey.text?.toString()?.trim() ?: ""
             prefs.groqApiKey = key
-            prefs.whisperModel = selectedModel
+            prefs.whisperModel = selectedWhisperModel
+            prefs.llmModel = selectedLlmModel
             prefs.language = selectedLanguage
             prefs.autoStartOnShare = binding.switchAutoStart.isChecked
             prefs.quickNotificationEnabled = binding.switchQuickNotification.isChecked
@@ -186,7 +262,8 @@ class MainActivity : AppCompatActivity() {
 
             // Save settings first if modified
             prefs.groqApiKey = binding.etApiKey.text?.toString()?.trim() ?: ""
-            prefs.whisperModel = selectedModel
+            prefs.whisperModel = selectedWhisperModel
+            prefs.llmModel = selectedLlmModel
             prefs.language = selectedLanguage
             prefs.autoStartOnShare = binding.switchAutoStart.isChecked
 
@@ -197,21 +274,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateModelUi(model: String) {
-        val isDefault = model == AppPreferences.DEFAULT_MODEL
-        binding.modelLargeV3.setBackgroundResource(
-            if (isDefault) R.drawable.bg_segment_selected else android.R.color.transparent
-        )
-        binding.modelLargeV3.setTextColor(
-            getColor(if (isDefault) R.color.text_primary else R.color.text_secondary)
-        )
+    private fun showModelSelectionDialog(
+        title: String,
+        items: List<String>,
+        currentSelection: String,
+        onSelected: (String) -> Unit
+    ) {
+        if (items.isEmpty()) {
+            Toast.makeText(this, "Không có model nào. Vui lòng bấm 'Tải model mới'", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        binding.modelTurbo.setBackgroundResource(
-            if (!isDefault) R.drawable.bg_segment_selected else android.R.color.transparent
-        )
-        binding.modelTurbo.setTextColor(
-            getColor(if (!isDefault) R.color.text_primary else R.color.text_secondary)
-        )
+        val currentIndex = items.indexOf(currentSelection).let { if (it >= 0) it else 0 }
+        var tempSelectedIndex = currentIndex
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setSingleChoiceItems(items.toTypedArray(), currentIndex) { _, which ->
+                tempSelectedIndex = which
+            }
+            .setPositiveButton("Chọn") { dialog, _ ->
+                if (tempSelectedIndex in items.indices) {
+                    onSelected(items[tempSelectedIndex])
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Hủy") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun updateLanguageUi(lang: String) {

@@ -23,7 +23,7 @@ class GroqLlamaService(
      * Contextually corrects homophone errors, typos, and terms in Vietnamese transcript
      * using Groq's ultra-fast Llama 3.3 70B model.
      */
-    suspend fun polishTranscript(apiKey: String, rawText: String): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun polishTranscript(apiKey: String, rawText: String, model: String = "groq/compound-mini"): Result<String> = withContext(Dispatchers.IO) {
         if (apiKey.isBlank()) {
             return@withContext Result.failure(IOException("Chưa cấu hình Groq API Key"))
         }
@@ -47,7 +47,7 @@ QUY TẮC BẮT BUỘC:
 """.trimIndent()
 
             val requestPayload = ChatCompletionRequest(
-                model = "groq/compound-mini",
+                model = model,
                 temperature = 0.1,
                 messages = listOf(
                     ChatMessage(role = "system", content = systemPrompt),
