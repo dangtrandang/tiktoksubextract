@@ -347,7 +347,7 @@ class TranscribeDialogActivity : AppCompatActivity() {
             // Switch to polished or generate it
             if (!polishedPlainText.isNullOrBlank()) {
                 isShowingPolished = true
-                binding.tvAiBadge.text = "✨ Đã sửa bởi Llama 3.3"
+                binding.tvAiBadge.text = "✨ Đã sửa bởi Groq AI"
                 binding.tvAiBadge.setTextColor(getColor(R.color.ios_green))
                 binding.btnAiPolish.text = "↩️ Xem bản gốc"
                 binding.tvTranscriptResult.text = polishedPlainText!!
@@ -366,11 +366,11 @@ class TranscribeDialogActivity : AppCompatActivity() {
                         val polished = result.getOrThrow()
                         polishedPlainText = polished
                         isShowingPolished = true
-                        binding.tvAiBadge.text = "✨ Đã sửa bởi Llama 3.3"
+                        binding.tvAiBadge.text = "✨ Đã sửa bởi Groq AI"
                         binding.tvAiBadge.setTextColor(getColor(R.color.ios_green))
                         binding.btnAiPolish.text = "↩️ Xem bản gốc"
                         binding.tvTranscriptResult.text = polished
-                        Toast.makeText(this@TranscribeDialogActivity, "✓ Llama 3.3 đã hiệu đính chính tả!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TranscribeDialogActivity, "✓ Groq AI đã hiệu đính chính tả!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.btnAiPolish.text = "✨ AI Sửa Lỗi"
                         val ex = result.exceptionOrNull()

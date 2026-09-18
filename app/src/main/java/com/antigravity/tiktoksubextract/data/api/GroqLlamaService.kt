@@ -47,7 +47,7 @@ QUY TẮC BẮT BUỘC:
 """.trimIndent()
 
             val requestPayload = ChatCompletionRequest(
-                model = "llama-3.3-70b-versatile",
+                model = "groq/compound-mini",
                 temperature = 0.1,
                 messages = listOf(
                     ChatMessage(role = "system", content = systemPrompt),
