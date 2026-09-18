@@ -1,0 +1,24 @@
+<resources>
+    <!-- Main Application Theme (iOS Dark Glass Style) -->
+    <style name="Theme.TikTokSubExtract" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/ios_bg_dark</item>
+        <item name="android:statusBarColor">@color/ios_bg_dark</item>
+        <item name="android:navigationBarColor">@color/ios_bg_dark</item>
+        <item name="colorPrimary">@color/ios_blue</item>
+        <item name="colorSecondary">@color/ios_indigo</item>
+        <item name="colorSurface">@color/ios_surface_dark</item>
+    </style>
+
+    <!-- iOS BottomSheet / Glass Dialog Theme -->
+    <style name="Theme.TikTokSubExtract.GlassDialog" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowElevation">16dp</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.65</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/ios_bg_dark</item>
+    </style>
+</resources>

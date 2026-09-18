@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- iOS Theme Base Colors -->
+    <color name="ios_black">#000000</color>
+    <color name="ios_bg_dark">#0D0D11</color>
+    <color name="ios_surface_dark">#18181E</color>
+    
+    <!-- iOS Frosted Glass Palette -->
+    <color name="glass_card_bg">#262630</color>
+    <color name="glass_card_bg_translucent">#D01E1E28</color>
+    <color name="glass_card_border">#33FFFFFF</color>
+    <color name="glass_card_border_subtle">#1AFFFFFF</color>
+    
+    <!-- iOS Interactive Colors -->
+    <color name="ios_blue">#0A84FF</color>
+    <color name="ios_blue_light">#5AC8FA</color>
+    <color name="ios_indigo">#5E5CE6</color>
+    <color name="ios_purple">#BF5AF2</color>
+    <color name="ios_green">#30D158</color>
+    <color name="ios_orange">#FF9F0A</color>
+    <color name="ios_red">#FF453A</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9898A0</color>
+    <color name="text_tertiary">#636366</color>
+    
+    <!-- Segmented Control & Buttons -->
+    <color name="segment_bg">#1E1E24</color>
+    <color name="segment_active">#0A84FF</color>
+    <color name="segment_active_glass">#38FFFFFF</color>
+    <color name="ios_grabber">#5E5E66</color>
+</resources>

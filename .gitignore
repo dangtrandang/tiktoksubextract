@@ -1,0 +1,25 @@
+# Build outputs
+app/build/
+build/
+.gradle/
+local.properties
+
+# APK files
+*.apk
+*.aab
+
+# IDE files
+.idea/
+*.iml
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+server/venv/
+server/.venv/
+
+# Temp files
+temp_upload.mp3
+*.log

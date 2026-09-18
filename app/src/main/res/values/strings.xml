@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">TikTok SubExtract</string>
+    <string name="app_tagline">Bóc lời thoại TikTok đưa ChatGPT trong vài giây</string>
+    <string name="settings_title">Cài đặt Groq API</string>
+    <string name="groq_api_key_hint">Nhập Groq API Key (gsk_...)</string>
+    <string name="save_settings">Lưu cấu hình</string>
+    <string name="test_connection">Kiểm tra kết nối Groq</string>
+    <string name="manual_input_title">Trích xuất thủ công</string>
+    <string name="manual_input_hint">Dán link TikTok (https://vt.tiktok.com/...)</string>
+    <string name="btn_transcribe">Bắt đầu bóc tách</string>
+    <string name="auto_start_title">Tự động nhận diện khi Share</string>
+    <string name="auto_start_desc">Tự động chạy pipeline ngay khi nhận link TikTok từ menu Share</string>
+    
+    <!-- Dialog Pipeline Strings -->
+    <string name="dialog_title">Bóc Lời Thoại Video</string>
+    <string name="step_extract_url">Nhận diện link TikTok</string>
+    <string name="step_download_audio">Trích xuất âm thanh (TikWM)</string>
+    <string name="step_whisper_ai">Nhận diện giọng nói (Groq Whisper AI)</string>
+    <string name="step_done">Hoàn tất</string>
+    
+    <!-- Tabs & Action Buttons -->
+    <string name="tab_plain_text">Văn bản</string>
+    <string name="tab_timestamp">Mốc giờ</string>
+    <string name="tab_srt">SRT</string>
+    <string name="btn_copy">Sao chép</string>
+    <string name="btn_share">Chia sẻ AI</string>
+    <string name="btn_cancel">Đóng</string>
+</resources>
