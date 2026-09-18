@@ -28,12 +28,16 @@ class TranscribeDialogActivity : AppCompatActivity() {
     private lateinit var prefs: AppPreferences
     private val tikWmService = TikWmService()
     private val whisperService = GroqWhisperService()
+    private val llamaService = com.antigravity.tiktoksubextract.data.api.GroqLlamaService()
 
     private var transcribeJob: Job? = null
     private var detectedUrl: String? = null
     private var whisperResult: WhisperResponse? = null
     private var currentTab: OutputTab = OutputTab.PLAIN_TEXT
     private var tempAudioFile: File? = null
+
+    private var polishedPlainText: String? = null
+    private var isShowingPolished: Boolean = false
 
     enum class OutputTab {
         PLAIN_TEXT, TIMESTAMP, SRT
@@ -87,6 +91,10 @@ class TranscribeDialogActivity : AppCompatActivity() {
 
         binding.btnPasteFromClipboard.setOnClickListener {
             readAndProcessClipboard()
+        }
+
+        binding.btnAiPolish.setOnClickListener {
+            handleAiPolishToggle()
         }
 
         binding.btnOpenSettings.setOnClickListener {
@@ -267,6 +275,13 @@ class TranscribeDialogActivity : AppCompatActivity() {
     }
 
     private fun displayResult(response: WhisperResponse) {
+        polishedPlainText = null
+        isShowingPolished = false
+        binding.tvAiBadge.text = "📝 Bản gốc Whisper"
+        binding.tvAiBadge.setTextColor(getColor(R.color.text_secondary))
+        binding.btnAiPolish.text = "✨ AI Sửa Lỗi"
+        binding.btnAiPolish.isEnabled = true
+
         binding.layoutResult.visibility = View.VISIBLE
         selectTab(OutputTab.PLAIN_TEXT)
     }
@@ -297,19 +312,85 @@ class TranscribeDialogActivity : AppCompatActivity() {
             getColor(if (tab == OutputTab.SRT) R.color.text_primary else R.color.text_secondary)
         )
 
-        // Update text preview
-        val text = when (tab) {
-            OutputTab.PLAIN_TEXT -> TranscriptFormatter.toPlainText(response)
-            OutputTab.TIMESTAMP -> TranscriptFormatter.toTimestampText(response)
-            OutputTab.SRT -> TranscriptFormatter.toSrt(response)
+        // Show AI Polish bar only on Plain Text tab
+        if (tab == OutputTab.PLAIN_TEXT) {
+            binding.layoutAiPolishBar.visibility = View.VISIBLE
+            val text = if (isShowingPolished && !polishedPlainText.isNullOrBlank()) {
+                polishedPlainText!!
+            } else {
+                TranscriptFormatter.toPlainText(response)
+            }
+            binding.tvTranscriptResult.text = text
+        } else {
+            binding.layoutAiPolishBar.visibility = View.GONE
+            val text = when (tab) {
+                OutputTab.TIMESTAMP -> TranscriptFormatter.toTimestampText(response)
+                OutputTab.SRT -> TranscriptFormatter.toSrt(response)
+                else -> TranscriptFormatter.toPlainText(response)
+            }
+            binding.tvTranscriptResult.text = text
         }
-        binding.tvTranscriptResult.text = text
+    }
+
+    private fun handleAiPolishToggle() {
+        val response = whisperResult ?: return
+
+        if (isShowingPolished) {
+            // Revert back to original
+            isShowingPolished = false
+            binding.tvAiBadge.text = "📝 Bản gốc Whisper"
+            binding.tvAiBadge.setTextColor(getColor(R.color.text_secondary))
+            binding.btnAiPolish.text = "✨ Xem bản AI sửa"
+            binding.tvTranscriptResult.text = TranscriptFormatter.toPlainText(response)
+            Toast.makeText(this, "Đã chuyển về bản gốc Whisper", Toast.LENGTH_SHORT).show()
+        } else {
+            // Switch to polished or generate it
+            if (!polishedPlainText.isNullOrBlank()) {
+                isShowingPolished = true
+                binding.tvAiBadge.text = "✨ Đã sửa bởi Llama 3.3"
+                binding.tvAiBadge.setTextColor(getColor(R.color.ios_green))
+                binding.btnAiPolish.text = "↩️ Xem bản gốc"
+                binding.tvTranscriptResult.text = polishedPlainText!!
+            } else {
+                val rawText = TranscriptFormatter.toPlainText(response)
+                if (rawText.isBlank()) return
+
+                binding.btnAiPolish.isEnabled = false
+                binding.btnAiPolish.text = "Đang sửa..."
+
+                lifecycleScope.launch {
+                    val result = llamaService.polishTranscript(prefs.groqApiKey, rawText)
+                    binding.btnAiPolish.isEnabled = true
+
+                    if (result.isSuccess) {
+                        val polished = result.getOrThrow()
+                        polishedPlainText = polished
+                        isShowingPolished = true
+                        binding.tvAiBadge.text = "✨ Đã sửa bởi Llama 3.3"
+                        binding.tvAiBadge.setTextColor(getColor(R.color.ios_green))
+                        binding.btnAiPolish.text = "↩️ Xem bản gốc"
+                        binding.tvTranscriptResult.text = polished
+                        Toast.makeText(this@TranscribeDialogActivity, "✓ Llama 3.3 đã hiệu đính chính tả!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        binding.btnAiPolish.text = "✨ AI Sửa Lỗi"
+                        val ex = result.exceptionOrNull()
+                        Toast.makeText(this@TranscribeDialogActivity, "Lỗi sửa văn bản: ${ex?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun getCurrentFormattedText(): String {
         val response = whisperResult ?: return ""
         return when (currentTab) {
-            OutputTab.PLAIN_TEXT -> TranscriptFormatter.toPlainText(response)
+            OutputTab.PLAIN_TEXT -> {
+                if (isShowingPolished && !polishedPlainText.isNullOrBlank()) {
+                    polishedPlainText!!
+                } else {
+                    TranscriptFormatter.toPlainText(response)
+                }
+            }
             OutputTab.TIMESTAMP -> TranscriptFormatter.toTimestampText(response)
             OutputTab.SRT -> TranscriptFormatter.toSrt(response)
         }

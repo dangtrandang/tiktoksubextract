@@ -14,6 +14,12 @@
   - Mặt kính mờ bán trong suốt (Frosted Glass), viền ánh kim siêu mỏng, góc bo cong mềm mại 32dp/20dp chuẩn Apple Cupertino.
   - Bộ chuyển đổi **iOS Segmented Control** mượt mà giữa các định dạng đầu ra.
   - Mở dạng **BottomSheet Dialog nổi** trên nền video TikTok, không gián đoạn trải nghiệm xem.
+- 🧠 **Tùy chọn AI Sửa Lỗi Chính Tả & Trau Chuốt (`Llama 3.3 70B`):**
+  - Nút bấm **`[ ✨ AI Sửa Lỗi ]`** chủ động: Người dùng bấm khi cần kiểm tra ngữ cảnh.
+  - Tự động phát hiện và sửa các từ đồng âm/gần âm phát âm sai, chuẩn hóa từ mượn tiếng Anh/công nghệ/tên riêng (ChatGPT, AI, TikTok, Marketing, Affiliate...).
+  - Thêm dấu chấm phẩy ngắt đoạn tự nhiên, giữ nguyên 100% nội dung gốc của người nói (không tóm tắt, không bịa thêm).
+  - Hỗ trợ chuyển đổi qua lại tức thì **`[ ↩️ Xem bản gốc ]`** ➔ **`[ ✨ Xem bản AI sửa ]`**.
+  - Tốc độ siêu tốc (0.3s) và **100% Miễn phí** qua Groq Cloud.
 - 🎯 **3 Chế độ Định dạng Transcript:**
   - **Văn bản thuần (Plain Text):** Ghép toàn bộ lời thoại tự nhiên để copy paste thẳng cho ChatGPT/Gemini đọc và phân tích.
   - **Mốc thời gian (Timestamp):** Dạng `[00:04] Lời thoại...` để đối chiếu từng phân đoạn trong video.

@@ -4,6 +4,18 @@ Tất cả những thay đổi nổi bật của dự án **TikTok SubExtract** 
 
 ---
 
+## [1.1.0] - 2026-09-18
+
+### 🚀 Tính năng mới (Added)
+- **Tùy chọn AI Sửa Lỗi Chính Tả (`Groq Llama 3.3 70B`):**
+  - Thêm nút bấm chủ động **`[ ✨ AI Sửa Lỗi ]`** trên tab Văn bản.
+  - Tự động phát hiện từ đồng âm/gần âm phát âm sai, chuẩn hóa thuật ngữ tiếng Anh/công nghệ/tên riêng (AI, ChatGPT, TikTok, Marketing, Gen Z...).
+  - Thêm dấu câu ngắt đoạn tự nhiên, giữ nguyên 100% nội dung gốc.
+  - Cho phép người dùng chuyển đổi qua lại tức thì giữa bản gốc Whisper và bản AI đã trau chuốt (`[ ↩️ Xem bản gốc ]` ➔ `[ ✨ Xem bản AI sửa ]`).
+  - Sử dụng chung Groq API Key hiện có, hoàn toàn miễn phí, tốc độ phản hồi ~0.3 giây.
+
+---
+
 ## [1.0.0] - 2026-09-18
 
 ### 🚀 Tính năng mới (Added)
